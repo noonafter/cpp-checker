@@ -1,0 +1,8 @@
+{
+  "name": "cpp-checker",
+  "version": "0.1.0",
+  "description": "Cppcheck static analysis plugin for Claude Code",
+  "author": {
+    "name": "ChuanLi"
+  }
+}
