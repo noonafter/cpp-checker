@@ -136,21 +136,31 @@ cppcheck --xml --xml-version=2
 3. **CI/CD 集成**: 通过 MCP 协议提供统一接口
 4. **IDE 集成**: 实时代码检查和智能提示
 
-## 未来扩展计划
+## Skills
 
-### 1. Skills 开发
-为用户和 LLM 提供更便捷的使用方式:
+插件提供以下 skills 简化使用:
 
-**可能的 Skills**:
-- `cppcheck-quick`: 快速检查当前文件
-- `cppcheck-full`: 完整检查当前项目
+### 已实现的 Skills
+
+**help** (`/cpp-checker:help`):
+- 显示插件使用指南和功能特性
+- `disable-model-invocation: false` - 允许 LLM 交互式回答问题
+
+**quick** (`/cpp-checker:quick`):
+- 快速检查当前文件或项目(warning 级别)
+- 自动识别检查目标(当前文件/工作目录)
+- 调用 `check_code` 工具,mode="quick"
+- 分析结果并提供简要总结
+
+**full** (`/cpp-checker:full`):
+- 完整检查当前文件或项目(所有检查项)
+- 检测 error、warning、style、performance、portability、information
+- 按严重程度分类问题并提供详细建议
+
+### 未来 Skills 计划
+
 - `cppcheck-fix`: 检查并提供修复建议
 - `cppcheck-config`: 配置 cppcheck 规则
-
-**设计原则**:
-- 简化常见操作流程
-- 提供上下文感知(当前文件/项目)
-- 集成修复建议和代码生成
 
 ### 2. Subagent 开发
 自动化代码检查和修复流程:
