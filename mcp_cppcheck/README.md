@@ -26,7 +26,7 @@ Add to your MCP config:
   "mcpServers": {
     "cppcheck": {
       "command": "uv",
-      "args": ["--directory", "/path/to/mcp_server", "run", "mcp_cppcheck"]
+      "args": ["--directory", "/path/to/mcp_server", "run", "-m", "mcp_cppcheck"]
     }
   }
 }
