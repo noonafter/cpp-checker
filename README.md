@@ -27,9 +27,14 @@ cpp-checker/
 │   └── REQUIREMENTS.md        # 详细需求文档(中文)
 ├── hooks/                     # Claude Code hooks
 │   ├── cppcheck-path-resolver-debug.py  # PreToolUse hook: 路径规范化
-│   └── hooks.json             # Hook 配置
-├── skills/                    # Claude Code skills (待扩展)
-│   └── hello/                 # 示例 skill
+│   └── hooks.json             # Hook 配置(默认关闭)
+├── skills/                    # Claude Code skills
+│   ├── hello/                 # 示例 skill
+│   ├── help/                  # 帮助 skill
+│   ├── quick/                 # 快速检查 skill
+│   └── full/                  # 完整检查 skill
+├── agents/                    # Claude Code subagents
+│   └── cppcheck-assistant.md  # 代码检查和修复助手
 ├── .claude-plugin/            # Claude 插件元数据
 │   └── plugin.json
 └── .mcp.json                  # MCP 服务器配置
@@ -113,6 +118,8 @@ cppcheck --xml --xml-version=2
 ### cppcheck-path-resolver-debug.py
 **触发时机**: PreToolUse (在 MCP 工具调用前)
 
+**状态**: 默认关闭 (`disabled: true`，由于PreToolUse串联调用存在的覆盖问题)
+
 **功能**:
 - 检测 cppcheck 工具调用
 - 将相对路径的 `target_path` 转换为绝对路径
@@ -162,35 +169,32 @@ cppcheck --xml --xml-version=2
 - `cppcheck-fix`: 检查并提供修复建议
 - `cppcheck-config`: 配置 cppcheck 规则
 
-### 2. Subagent 开发
-自动化代码检查和修复流程:
+## Subagents
 
-**可能的 Subagent**:
-- `cppcheck-analyzer`: 分析检查结果,识别关键问题
-- `cppcheck-fixer`: 自动修复常见问题
-- `cppcheck-reporter`: 生成格式化报告
+插件提供以下 subagent 用于独立上下文中的复杂任务:
 
-**设计原则**:
-- 自主决策和执行
-- 与主 Agent 协作
-- 提供进度反馈
+### cppcheck-assistant
 
-### 3. 功能增强
+**位置**: `agents/cppcheck-assistant.md`
 
-**智能编译参数提取** (优先级: 高):
-- 从 compile_commands.json 提取 -I/-D/-std 参数
-- 应用到普通文件/目录检查,减少误报
-- 实现位置: `project_detector.py` 新增方法
+**配置**:
+- 模型: `sonnet` (平衡性能和成本)
+- 可用工具: check_code, get_project_context, Read, Grep, Glob, Edit, Write
 
-**常见误报过滤** (优先级: 中):
-- 提供接口屏蔽特定类型错误(如 Qt 宏相关)
-- 用户可配置忽略规则
-- 实现位置: `cppcheck_runner.py` 新增过滤逻辑
+**功能**:
+- 代码检查: 调用 check_code 工具分析 C/C++ 代码
+- 问题修复: 识别问题并提供具体修复方案
+- 报告生成: 生成结构化的 Markdown 检查报告
 
-**输出报告到本地** (优先级: 低):
-- 支持 --output-file 参数
-- 记录检查参数和时间戳
-- 实现位置: `cppcheck_runner.py` 新增方法
+**使用场景**:
+- 需要深度分析大型项目
+- 批量处理多个文件的检查结果
+- 生成详细的代码质量报告
+
+**工作模式**:
+1. 检查模式 - 执行代码检查并分类问题
+2. 修复模式 - 提供针对性的修复建议
+3. 报告模式 - 生成完整的检查报告
 
 ## 开发指南
 
